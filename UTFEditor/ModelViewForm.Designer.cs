@@ -32,6 +32,14 @@
             this.lblHardpointName = new System.Windows.Forms.Label();
             this.splitViewHardpoint = new System.Windows.Forms.SplitContainer();
             this.viewPanelView = new System.Windows.Forms.DataGridView();
+            this.colMPVisible = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colMPElement = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMPShading = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.colMPColor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMPChannel = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.colMPChannelColor = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colMPChannelTexture = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colMPVertexColor = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.hardpointPanelView = new System.Windows.Forms.DataGridView();
             this.colHPVisible = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colHPName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -74,14 +82,7 @@
             this.shortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showViewPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorDiag = new System.Windows.Forms.ColorDialog();
-            this.colMPVisible = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.colMPElement = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colMPShading = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.colMPColor = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colMPChannel = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.colMPChannelColor = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.colMPChannelTexture = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.colMPVertexColor = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.displayVerticeNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.modelView)).BeginInit();
             this.modelView.Panel1.SuspendLayout();
             this.modelView.Panel2.SuspendLayout();
@@ -98,7 +99,7 @@
             // modelView
             // 
             this.modelView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.modelView.Location = new System.Drawing.Point(0, 27);
+            this.modelView.Location = new System.Drawing.Point(0, 24);
             this.modelView.Name = "modelView";
             // 
             // modelView.Panel1
@@ -119,7 +120,7 @@
             // 
             this.modelView.Panel2.Controls.Add(this.splitViewHardpoint);
             this.modelView.Panel2MinSize = 0;
-            this.modelView.Size = new System.Drawing.Size(1008, 703);
+            this.modelView.Size = new System.Drawing.Size(1008, 706);
             this.modelView.SplitterDistance = 688;
             this.modelView.TabIndex = 0;
             // 
@@ -131,7 +132,7 @@
             this.lblHardpointName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblHardpointName.Location = new System.Drawing.Point(0, 0);
             this.lblHardpointName.Name = "lblHardpointName";
-            this.lblHardpointName.Size = new System.Drawing.Size(102, 24);
+            this.lblHardpointName.Size = new System.Drawing.Size(92, 22);
             this.lblHardpointName.TabIndex = 0;
             this.lblHardpointName.Text = "HpName01";
             this.lblHardpointName.Visible = false;
@@ -151,7 +152,7 @@
             // 
             this.splitViewHardpoint.Panel2.Controls.Add(this.hardpointPanelView);
             this.splitViewHardpoint.Panel2Collapsed = true;
-            this.splitViewHardpoint.Size = new System.Drawing.Size(316, 703);
+            this.splitViewHardpoint.Size = new System.Drawing.Size(316, 706);
             this.splitViewHardpoint.SplitterDistance = 300;
             this.splitViewHardpoint.TabIndex = 5;
             // 
@@ -178,12 +179,79 @@
             this.viewPanelView.Name = "viewPanelView";
             this.viewPanelView.RowHeadersVisible = false;
             this.viewPanelView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.viewPanelView.Size = new System.Drawing.Size(316, 703);
+            this.viewPanelView.Size = new System.Drawing.Size(316, 706);
             this.viewPanelView.TabIndex = 3;
             this.viewPanelView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.viewPanelView_CellValueChanged);
             this.viewPanelView.CurrentCellDirtyStateChanged += new System.EventHandler(this.viewPanelView_CurrentCellDirtyStateChanged);
             this.viewPanelView.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.viewPanelView_SortCompare);
             this.viewPanelView.DoubleClick += new System.EventHandler(this.viewPanelView_DoubleClick);
+            // 
+            // colMPVisible
+            // 
+            this.colMPVisible.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colMPVisible.HeaderText = "Visible";
+            this.colMPVisible.Name = "colMPVisible";
+            this.colMPVisible.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colMPVisible.Width = 43;
+            // 
+            // colMPElement
+            // 
+            this.colMPElement.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colMPElement.HeaderText = "Element";
+            this.colMPElement.MinimumWidth = 50;
+            this.colMPElement.Name = "colMPElement";
+            this.colMPElement.ReadOnly = true;
+            this.colMPElement.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colMPElement.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colMPElement.Width = 51;
+            // 
+            // colMPShading
+            // 
+            this.colMPShading.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colMPShading.HeaderText = "Shading";
+            this.colMPShading.Items.AddRange(new object[] {
+            "Flat",
+            "Wireframe"});
+            this.colMPShading.Name = "colMPShading";
+            this.colMPShading.Width = 52;
+            // 
+            // colMPColor
+            // 
+            this.colMPColor.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colMPColor.HeaderText = "Color (RGBA)";
+            this.colMPColor.Name = "colMPColor";
+            this.colMPColor.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.colMPColor.Width = 69;
+            // 
+            // colMPChannel
+            // 
+            this.colMPChannel.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colMPChannel.HeaderText = "Channel";
+            this.colMPChannel.Items.AddRange(new object[] {
+            "Diffuse",
+            "Emissive",
+            "Opacity"});
+            this.colMPChannel.Name = "colMPChannel";
+            this.colMPChannel.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.colMPChannel.Width = 52;
+            // 
+            // colMPChannelColor
+            // 
+            this.colMPChannelColor.HeaderText = "Channel Color";
+            this.colMPChannelColor.Name = "colMPChannelColor";
+            this.colMPChannelColor.Width = 60;
+            // 
+            // colMPChannelTexture
+            // 
+            this.colMPChannelTexture.HeaderText = "Channel Texture";
+            this.colMPChannelTexture.Name = "colMPChannelTexture";
+            this.colMPChannelTexture.Width = 60;
+            // 
+            // colMPVertexColor
+            // 
+            this.colMPVertexColor.HeaderText = "Vertex Color";
+            this.colMPVertexColor.Name = "colMPVertexColor";
+            this.colMPVertexColor.Width = 50;
             // 
             // hardpointPanelView
             // 
@@ -216,7 +284,7 @@
             this.colHPVisible.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.colHPVisible.HeaderText = "Visible";
             this.colHPVisible.Name = "colHPVisible";
-            this.colHPVisible.Width = 49;
+            this.colHPVisible.Width = 43;
             // 
             // colHPName
             // 
@@ -224,7 +292,7 @@
             this.colHPName.HeaderText = "Hardpoint";
             this.colHPName.Name = "colHPName";
             this.colHPName.ReadOnly = true;
-            this.colHPName.Width = 88;
+            this.colHPName.Width = 78;
             // 
             // colHPRevolute
             // 
@@ -232,14 +300,14 @@
             this.colHPRevolute.HeaderText = "Revolute";
             this.colHPRevolute.Name = "colHPRevolute";
             this.colHPRevolute.ReadOnly = true;
-            this.colHPRevolute.Width = 61;
+            this.colHPRevolute.Width = 56;
             // 
             // colHPColor
             // 
             this.colHPColor.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.colHPColor.HeaderText = "Color";
             this.colHPColor.Name = "colHPColor";
-            this.colHPColor.Width = 63;
+            this.colHPColor.Width = 56;
             // 
             // menu
             // 
@@ -252,7 +320,7 @@
             this.showViewPanelToolStripMenuItem});
             this.menu.Location = new System.Drawing.Point(0, 0);
             this.menu.Name = "menu";
-            this.menu.Size = new System.Drawing.Size(1008, 27);
+            this.menu.Size = new System.Drawing.Size(1008, 24);
             this.menu.TabIndex = 8;
             this.menu.Text = "menu";
             // 
@@ -262,13 +330,13 @@
             this.resetAllToolStripMenuItem1,
             this.editHardpointsToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(44, 23);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // resetAllToolStripMenuItem1
             // 
             this.resetAllToolStripMenuItem1.Name = "resetAllToolStripMenuItem1";
-            this.resetAllToolStripMenuItem1.Size = new System.Drawing.Size(166, 24);
+            this.resetAllToolStripMenuItem1.Size = new System.Drawing.Size(147, 22);
             this.resetAllToolStripMenuItem1.Text = "Reset Settings";
             this.resetAllToolStripMenuItem1.Click += new System.EventHandler(this.resetAllToolStripMenuItem_Click);
             // 
@@ -279,27 +347,27 @@
             this.addHardpointsToolStripMenuItem,
             this.fuseComposerToolStripMenuItem});
             this.editHardpointsToolStripMenuItem.Name = "editHardpointsToolStripMenuItem";
-            this.editHardpointsToolStripMenuItem.Size = new System.Drawing.Size(166, 24);
+            this.editHardpointsToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.editHardpointsToolStripMenuItem.Text = "Mode";
             // 
             // editHardpointsToolStripMenuItem1
             // 
             this.editHardpointsToolStripMenuItem1.Name = "editHardpointsToolStripMenuItem1";
-            this.editHardpointsToolStripMenuItem1.Size = new System.Drawing.Size(177, 24);
+            this.editHardpointsToolStripMenuItem1.Size = new System.Drawing.Size(158, 22);
             this.editHardpointsToolStripMenuItem1.Text = "Edit Hardpoints";
             this.editHardpointsToolStripMenuItem1.Click += new System.EventHandler(this.hardpointEditToolStripMenuItem_Click);
             // 
             // addHardpointsToolStripMenuItem
             // 
             this.addHardpointsToolStripMenuItem.Name = "addHardpointsToolStripMenuItem";
-            this.addHardpointsToolStripMenuItem.Size = new System.Drawing.Size(177, 24);
+            this.addHardpointsToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.addHardpointsToolStripMenuItem.Text = "Add Hardpoints";
             this.addHardpointsToolStripMenuItem.Click += new System.EventHandler(this.addHardpointsToolStripMenuItem_Click);
             // 
             // fuseComposerToolStripMenuItem
             // 
             this.fuseComposerToolStripMenuItem.Name = "fuseComposerToolStripMenuItem";
-            this.fuseComposerToolStripMenuItem.Size = new System.Drawing.Size(177, 24);
+            this.fuseComposerToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.fuseComposerToolStripMenuItem.Text = "Fuse Composer";
             this.fuseComposerToolStripMenuItem.Click += new System.EventHandler(this.fuseComposerToolStripMenuItem_Click);
             // 
@@ -315,14 +383,14 @@
             this.resetToolStripMenuItem,
             this.centerOnHardpointToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(50, 23);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // bottomToolStripMenuItem
             // 
             this.bottomToolStripMenuItem.Name = "bottomToolStripMenuItem";
             this.bottomToolStripMenuItem.ShortcutKeyDisplayString = "1";
-            this.bottomToolStripMenuItem.Size = new System.Drawing.Size(290, 24);
+            this.bottomToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.bottomToolStripMenuItem.Text = "Bottom";
             this.bottomToolStripMenuItem.Click += new System.EventHandler(this.bottomToolStripMenuItem_Click);
             // 
@@ -330,7 +398,7 @@
             // 
             this.topToolStripMenuItem.Name = "topToolStripMenuItem";
             this.topToolStripMenuItem.ShortcutKeyDisplayString = "2";
-            this.topToolStripMenuItem.Size = new System.Drawing.Size(290, 24);
+            this.topToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.topToolStripMenuItem.Text = "Top";
             this.topToolStripMenuItem.Click += new System.EventHandler(this.topToolStripMenuItem_Click);
             // 
@@ -338,7 +406,7 @@
             // 
             this.backToolStripMenuItem.Name = "backToolStripMenuItem";
             this.backToolStripMenuItem.ShortcutKeyDisplayString = "3";
-            this.backToolStripMenuItem.Size = new System.Drawing.Size(290, 24);
+            this.backToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.backToolStripMenuItem.Text = "Back";
             this.backToolStripMenuItem.Click += new System.EventHandler(this.backToolStripMenuItem_Click);
             // 
@@ -346,7 +414,7 @@
             // 
             this.frontToolStripMenuItem.Name = "frontToolStripMenuItem";
             this.frontToolStripMenuItem.ShortcutKeyDisplayString = "4";
-            this.frontToolStripMenuItem.Size = new System.Drawing.Size(290, 24);
+            this.frontToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.frontToolStripMenuItem.Text = "Front";
             this.frontToolStripMenuItem.Click += new System.EventHandler(this.frontToolStripMenuItem_Click);
             // 
@@ -354,7 +422,7 @@
             // 
             this.rightToolStripMenuItem.Name = "rightToolStripMenuItem";
             this.rightToolStripMenuItem.ShortcutKeyDisplayString = "5";
-            this.rightToolStripMenuItem.Size = new System.Drawing.Size(290, 24);
+            this.rightToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.rightToolStripMenuItem.Text = "Right";
             this.rightToolStripMenuItem.Click += new System.EventHandler(this.rightToolStripMenuItem_Click);
             // 
@@ -362,7 +430,7 @@
             // 
             this.leftToolStripMenuItem.Name = "leftToolStripMenuItem";
             this.leftToolStripMenuItem.ShortcutKeyDisplayString = "6";
-            this.leftToolStripMenuItem.Size = new System.Drawing.Size(290, 24);
+            this.leftToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.leftToolStripMenuItem.Text = "Left";
             this.leftToolStripMenuItem.Click += new System.EventHandler(this.leftToolStripMenuItem_Click);
             // 
@@ -370,7 +438,7 @@
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
             this.resetToolStripMenuItem.ShortcutKeyDisplayString = "Home";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(290, 24);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
@@ -378,7 +446,7 @@
             // 
             this.centerOnHardpointToolStripMenuItem.Name = "centerOnHardpointToolStripMenuItem";
             this.centerOnHardpointToolStripMenuItem.ShortcutKeyDisplayString = "Shift+Home";
-            this.centerOnHardpointToolStripMenuItem.Size = new System.Drawing.Size(290, 24);
+            this.centerOnHardpointToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.centerOnHardpointToolStripMenuItem.Text = "Center on Hardpoint";
             this.centerOnHardpointToolStripMenuItem.Click += new System.EventHandler(this.centerOnHardpointToolStripMenuItem_Click);
             // 
@@ -388,9 +456,10 @@
             this.backgroundToolStripMenuItem,
             this.hardpointSizeToolStripMenuItem,
             this.zoomToolStripMenuItem,
-            this.sURToolStripMenuItem});
+            this.sURToolStripMenuItem,
+            this.displayVerticeNormalsToolStripMenuItem});
             this.visibilityToolStripMenuItem.Name = "visibilityToolStripMenuItem";
-            this.visibilityToolStripMenuItem.Size = new System.Drawing.Size(71, 23);
+            this.visibilityToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.visibilityToolStripMenuItem.Text = "Visibility";
             // 
             // backgroundToolStripMenuItem
@@ -399,7 +468,7 @@
             this.blackToolStripMenuItem,
             this.whiteToolStripMenuItem});
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(169, 24);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.backgroundToolStripMenuItem.Text = "Background";
             // 
             // blackToolStripMenuItem
@@ -408,7 +477,7 @@
             this.blackToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.blackToolStripMenuItem.Name = "blackToolStripMenuItem";
             this.blackToolStripMenuItem.ShortcutKeyDisplayString = "B";
-            this.blackToolStripMenuItem.Size = new System.Drawing.Size(133, 24);
+            this.blackToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.blackToolStripMenuItem.Text = "Black";
             this.blackToolStripMenuItem.Click += new System.EventHandler(this.blackToolStripMenuItem_Click);
             // 
@@ -416,7 +485,7 @@
             // 
             this.whiteToolStripMenuItem.Name = "whiteToolStripMenuItem";
             this.whiteToolStripMenuItem.ShortcutKeyDisplayString = "B";
-            this.whiteToolStripMenuItem.Size = new System.Drawing.Size(133, 24);
+            this.whiteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.whiteToolStripMenuItem.Text = "White";
             this.whiteToolStripMenuItem.Click += new System.EventHandler(this.whiteToolStripMenuItem_Click);
             // 
@@ -427,14 +496,14 @@
             this.increaseToolStripMenuItem1,
             this.toolStripHardpointSizeSet});
             this.hardpointSizeToolStripMenuItem.Name = "hardpointSizeToolStripMenuItem";
-            this.hardpointSizeToolStripMenuItem.Size = new System.Drawing.Size(169, 24);
+            this.hardpointSizeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.hardpointSizeToolStripMenuItem.Text = "Hardpoint Size";
             // 
             // decreaseToolStripMenuItem1
             // 
             this.decreaseToolStripMenuItem1.Name = "decreaseToolStripMenuItem1";
             this.decreaseToolStripMenuItem1.ShortcutKeyDisplayString = "/";
-            this.decreaseToolStripMenuItem1.Size = new System.Drawing.Size(162, 24);
+            this.decreaseToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.decreaseToolStripMenuItem1.Text = "Decrease";
             this.decreaseToolStripMenuItem1.Click += new System.EventHandler(this.decreaseToolStripMenuItem1_Click);
             // 
@@ -442,14 +511,15 @@
             // 
             this.increaseToolStripMenuItem1.Name = "increaseToolStripMenuItem1";
             this.increaseToolStripMenuItem1.ShortcutKeyDisplayString = "*";
-            this.increaseToolStripMenuItem1.Size = new System.Drawing.Size(162, 24);
+            this.increaseToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.increaseToolStripMenuItem1.Text = "Increase";
             this.increaseToolStripMenuItem1.Click += new System.EventHandler(this.increaseToolStripMenuItem1_Click);
             // 
             // toolStripHardpointSizeSet
             // 
+            this.toolStripHardpointSizeSet.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolStripHardpointSizeSet.Name = "toolStripHardpointSizeSet";
-            this.toolStripHardpointSizeSet.Size = new System.Drawing.Size(100, 25);
+            this.toolStripHardpointSizeSet.Size = new System.Drawing.Size(100, 23);
             this.toolStripHardpointSizeSet.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolStripHardpointSizeSet.TextChanged += new System.EventHandler(this.toolStripHardpointSizeSet_TextChanged);
             // 
@@ -459,14 +529,14 @@
             this.inToolStripMenuItem,
             this.outToolStripMenuItem});
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(169, 24);
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.zoomToolStripMenuItem.Text = "Zoom";
             // 
             // inToolStripMenuItem
             // 
             this.inToolStripMenuItem.Name = "inToolStripMenuItem";
             this.inToolStripMenuItem.ShortcutKeyDisplayString = "+";
-            this.inToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.inToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.inToolStripMenuItem.Text = "In";
             this.inToolStripMenuItem.Click += new System.EventHandler(this.inToolStripMenuItem_Click);
             // 
@@ -474,7 +544,7 @@
             // 
             this.outToolStripMenuItem.Name = "outToolStripMenuItem";
             this.outToolStripMenuItem.ShortcutKeyDisplayString = "-";
-            this.outToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.outToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.outToolStripMenuItem.Text = "Out";
             this.outToolStripMenuItem.Click += new System.EventHandler(this.outToolStripMenuItem_Click);
             // 
@@ -487,7 +557,7 @@
             this.opaqueToolStripMenuItem,
             this.centersToolStripMenuItem});
             this.sURToolStripMenuItem.Name = "sURToolStripMenuItem";
-            this.sURToolStripMenuItem.Size = new System.Drawing.Size(169, 24);
+            this.sURToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.sURToolStripMenuItem.Text = "SUR";
             // 
             // hiddenToolStripMenuItem
@@ -496,7 +566,7 @@
             this.hiddenToolStripMenuItem.CheckOnClick = true;
             this.hiddenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hiddenToolStripMenuItem.Name = "hiddenToolStripMenuItem";
-            this.hiddenToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.hiddenToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.hiddenToolStripMenuItem.Text = "Hidden";
             this.hiddenToolStripMenuItem.Click += new System.EventHandler(this.hiddenToolStripMenuItem_Click);
             // 
@@ -504,7 +574,7 @@
             // 
             this.wireframeToolStripMenuItem.CheckOnClick = true;
             this.wireframeToolStripMenuItem.Name = "wireframeToolStripMenuItem";
-            this.wireframeToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.wireframeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.wireframeToolStripMenuItem.Text = "Wireframe";
             this.wireframeToolStripMenuItem.Click += new System.EventHandler(this.wireframeToolStripMenuItem_Click);
             // 
@@ -512,7 +582,7 @@
             // 
             this.transparentToolStripMenuItem.CheckOnClick = true;
             this.transparentToolStripMenuItem.Name = "transparentToolStripMenuItem";
-            this.transparentToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.transparentToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.transparentToolStripMenuItem.Text = "Transparent";
             this.transparentToolStripMenuItem.Click += new System.EventHandler(this.transparentToolStripMenuItem_Click);
             // 
@@ -520,14 +590,14 @@
             // 
             this.opaqueToolStripMenuItem.CheckOnClick = true;
             this.opaqueToolStripMenuItem.Name = "opaqueToolStripMenuItem";
-            this.opaqueToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.opaqueToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.opaqueToolStripMenuItem.Text = "Opaque";
             this.opaqueToolStripMenuItem.Click += new System.EventHandler(this.opaqueToolStripMenuItem_Click);
             // 
             // centersToolStripMenuItem
             // 
             this.centersToolStripMenuItem.Name = "centersToolStripMenuItem";
-            this.centersToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.centersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.centersToolStripMenuItem.Text = "Centers";
             this.centersToolStripMenuItem.Click += new System.EventHandler(this.centersToolStripMenuItem_Click);
             // 
@@ -536,14 +606,14 @@
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.shortcutsToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(49, 23);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // shortcutsToolStripMenuItem
             // 
             this.shortcutsToolStripMenuItem.Name = "shortcutsToolStripMenuItem";
             this.shortcutsToolStripMenuItem.ShortcutKeyDisplayString = "F1";
-            this.shortcutsToolStripMenuItem.Size = new System.Drawing.Size(171, 24);
+            this.shortcutsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.shortcutsToolStripMenuItem.Text = "Shortcuts...";
             this.shortcutsToolStripMenuItem.Click += new System.EventHandler(this.shortcutsToolStripMenuItem_Click);
             // 
@@ -553,76 +623,17 @@
             this.showViewPanelToolStripMenuItem.Checked = true;
             this.showViewPanelToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showViewPanelToolStripMenuItem.Name = "showViewPanelToolStripMenuItem";
-            this.showViewPanelToolStripMenuItem.Size = new System.Drawing.Size(131, 23);
+            this.showViewPanelToolStripMenuItem.Size = new System.Drawing.Size(114, 20);
             this.showViewPanelToolStripMenuItem.Text = "Toggle View Panel";
             this.showViewPanelToolStripMenuItem.Click += new System.EventHandler(this.showViewPanelToolStripMenuItem_Click);
             // 
-            // colMPVisible
+            // displayVerticeNormalsToolStripMenuItem
             // 
-            this.colMPVisible.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colMPVisible.HeaderText = "Visible";
-            this.colMPVisible.Name = "colMPVisible";
-            this.colMPVisible.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colMPVisible.Width = 49;
-            // 
-            // colMPElement
-            // 
-            this.colMPElement.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colMPElement.HeaderText = "Element";
-            this.colMPElement.MinimumWidth = 50;
-            this.colMPElement.Name = "colMPElement";
-            this.colMPElement.ReadOnly = true;
-            this.colMPElement.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colMPElement.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colMPElement.Width = 59;
-            // 
-            // colMPShading
-            // 
-            this.colMPShading.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colMPShading.HeaderText = "Shading";
-            this.colMPShading.Items.AddRange(new object[] {
-            "Flat",
-            "Wireframe"});
-            this.colMPShading.Name = "colMPShading";
-            this.colMPShading.Width = 59;
-            // 
-            // colMPColor
-            // 
-            this.colMPColor.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colMPColor.HeaderText = "Color (RGBA)";
-            this.colMPColor.Name = "colMPColor";
-            this.colMPColor.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colMPColor.Width = 86;
-            // 
-            // colMPChannel
-            // 
-            this.colMPChannel.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.colMPChannel.HeaderText = "Channel";
-            this.colMPChannel.Items.AddRange(new object[] {
-            "Diffuse",
-            "Emissive",
-            "Opacity"});
-            this.colMPChannel.Name = "colMPChannel";
-            this.colMPChannel.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.colMPChannel.Width = 59;
-            // 
-            // colMPChannelColor
-            // 
-            this.colMPChannelColor.HeaderText = "Channel Color";
-            this.colMPChannelColor.Name = "colMPChannelColor";
-            this.colMPChannelColor.Width = 60;
-            // 
-            // colMPChannelTexture
-            // 
-            this.colMPChannelTexture.HeaderText = "Channel Texture";
-            this.colMPChannelTexture.Name = "colMPChannelTexture";
-            this.colMPChannelTexture.Width = 60;
-            // 
-            // colMPVertexColor
-            // 
-            this.colMPVertexColor.HeaderText = "Vertex Color";
-            this.colMPVertexColor.Name = "colMPVertexColor";
-            this.colMPVertexColor.Width = 50;
+            this.displayVerticeNormalsToolStripMenuItem.CheckOnClick = true;
+            this.displayVerticeNormalsToolStripMenuItem.Name = "displayVerticeNormalsToolStripMenuItem";
+            this.displayVerticeNormalsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.displayVerticeNormalsToolStripMenuItem.Text = "Show Vertice Normals";
+            this.displayVerticeNormalsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.displayVerticeNormalsToolStripMenuItem_CheckedChanged);
             // 
             // ModelViewForm
             // 
@@ -710,5 +721,6 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn colMPChannelColor;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colMPChannelTexture;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colMPVertexColor;
+        private System.Windows.Forms.ToolStripMenuItem displayVerticeNormalsToolStripMenuItem;
     }
 }

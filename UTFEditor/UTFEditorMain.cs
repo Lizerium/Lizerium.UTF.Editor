@@ -10,11 +10,22 @@ using System.Media;
 using System.IO;
 
 using System.Reflection;
+using System.Collections;
+using System.Text.Json;
+using UTFEditor.Components;
+using SharpDX.Direct3D9;
+using System.Security.Cryptography;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace UTFEditor
 {
     public partial class UTFEditorMain : Form
     {
+        /// <summary>
+        /// Если файлов несколько фиксируются они тут
+        /// </summary>
+        public static Dictionary<string, UTFForm> LoadedFilesThreeViews = null;
+
         const string UTFfilter = "FL UTF Files|*.3db;*.ale;*.anm;*.cmp;*.dfm;*.mat;*.sph;*.txm;*.utf;*.vms|" +
                                  "Model Files (*.3db)|*.3db|" +
                                  "Alchemy Files (*.ale)|*.ale|" +
@@ -33,12 +44,22 @@ namespace UTFEditor
 
         private int childFormNumber = 0;
 
+        //Generate forms and dialogs here, so their internal values are kept when opening them multiple times
+        RecalculateVertexDataForm recalcForm = new RecalculateVertexDataForm();
+        FolderBrowserDialog folderBrowserDialogVerifyModels = new FolderBrowserDialog();
+        FolderBrowserDialog folderBrowserDialogAddTBNDataToModels = new FolderBrowserDialog();
+
         public UTFEditorMain(string[] args)
         {
+            LoadedFilesThreeViews = new Dictionary<string, UTFForm>();
+
             InitializeComponent();
             SetSelectedNode(null);
             LoadRecentFiles();
 			LoadHpColors();
+
+            folderBrowserDialogVerifyModels.Description = "Select folder which contains the models to verifiy:";
+            folderBrowserDialogAddTBNDataToModels.Description = "Select folder which contains the models for adding TBN data:";
 
             foreach (string arg in args)
             {
@@ -58,6 +79,7 @@ namespace UTFEditor
         {
             UTFForm childForm = new UTFForm(this, name);
             childForm.LoadUTFFile(name);
+            LoadedFilesThreeViews.Add(name, childForm);
             childForm.MdiParent = this;
             childForm.Show();
 
@@ -89,6 +111,8 @@ namespace UTFEditor
         private void UTFEditor_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if(ResetLoadedFiles.Checked)
+                LoadedFilesThreeViews.Clear();
             foreach (string file in files)
             {
                 try
@@ -332,8 +356,7 @@ namespace UTFEditor
 			new HpColor("HpRunningLight", 0xC0FFC0),
 			new HpColor("HpContrail",     0xC0C0C0),
 		};
-
-		private void LoadHpColors()
+        private void LoadHpColors()
 		{
 			System.Configuration.SettingsPropertyValueCollection hpcolors = Properties.Settings.Default.PropertyValues;
 			for (int i = 0; i < HpColors.Length; i++)
@@ -671,7 +694,7 @@ namespace UTFEditor
 			if (fullHex)
 			{
 				DataGridViewCellStyle style = dataView.DefaultCellStyle.Clone();
-				style.Font = new Font(FontFamily.GenericMonospace, style.Font.SizeInPoints);
+				style.Font = new System.Drawing.Font(FontFamily.GenericMonospace, style.Font.SizeInPoints);
 				dataView.Columns[1].DefaultCellStyle =
 				dataView.Columns[2].DefaultCellStyle = style;
 				dataView.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -1033,8 +1056,19 @@ namespace UTFEditor
         {
             if (this.ActiveMdiChild is UTFForm)
             {
-                UTFForm childForm = this.ActiveMdiChild as UTFForm;
-                childForm.CalcTangents();
+
+                if (recalcForm.ShowDialog(this) == DialogResult.OK)
+                {
+                    UTFForm childForm = this.ActiveMdiChild as UTFForm;
+                    try
+                    {
+                        childForm.CalcTangents(recalcForm.RecalculateNormals, recalcForm.MaxAngle);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(this, "Error '" + ex.Message + "'", "Error");
+                    }
+                }
             }
         }
 		private void btnRevFixed_Click(object sender, EventArgs e)
@@ -1126,7 +1160,7 @@ namespace UTFEditor
 
                 if (folderBrowserDialog1.ShowDialog(this) == DialogResult.OK)
                 {
-                    childForm.ExportAllTextures(folderBrowserDialog1.SelectedPath);
+                    childForm.ExportAllTextures(folderBrowserDialog1.SelectedPath, ResetLoadedFiles.Checked);
                 }
             }
         }
@@ -1276,6 +1310,111 @@ namespace UTFEditor
                 {
                     childForm.ImportTextures(openFileDialog2.FileNames);
                 }
+            }
+        }
+
+        private void importFolderTexturesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var currenKey = "";
+            try
+            {
+                if (openFileDialog2.ShowDialog(this) == DialogResult.OK)
+                {
+                    if (openFileDialog2.FileNames == null || openFileDialog2.FileNames.Length == 0) return;
+
+                    var manifest = openFileDialog2.FileNames[0];
+                    var dirManifest = Path.GetDirectoryName(manifest);
+
+                    var dataFile = File.ReadAllText(manifest);
+                    var config = JsonSerializer.Deserialize<ExportTexturesConfig>(dataFile);
+
+                    // загружаю информацию манифеста
+                    foreach (var view in UTFEditorMain.LoadedFilesThreeViews)
+                    {
+                        var nameFileImport = Path.GetFileName(view.Key);
+
+                        // ищу имя файла в манифесте
+                        var existManifestName = config.ExportItems.FirstOrDefault(it => it.NameFile == nameFileImport);
+
+                        if (existManifestName != null)
+                        {
+                            // ищу относительно пути манифейста
+                            var dirs = Directory.GetDirectories(dirManifest);
+
+                            var existDirFile = dirs.FirstOrDefault(it => Path.GetFileName(it) == nameFileImport);
+                            // папка с текстурами найдена (теперь нужно внести все текстуры в ней в views
+                            if (!string.IsNullOrEmpty(existDirFile))
+                            {
+                                var texNorms = new List<string>();
+                                if (view.Key.Contains("starsphere_AI01"))
+                                {
+                                    var dwad = 0;
+                                }
+                                // перебираю данные манифеста и сохраняю в форму файлы
+                                view.Value.ImportTexturesAllDds(existManifestName.ExportTextures, existDirFile);
+
+                                currenKey = view.Key;
+                                view.Value.SaveUTFFile(view.Key);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var log = ex.Message;
+            }
+        }
+
+
+        private void importFolderTexturesDDSAndTGAToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var currenKey = "";
+            try
+            {
+                if (openFileDialog2.ShowDialog(this) == DialogResult.OK)
+                {
+                    if (openFileDialog2.FileNames == null || openFileDialog2.FileNames.Length == 0) return;
+
+                    var manifest = openFileDialog2.FileNames[0];
+                    var dirManifest = Path.GetDirectoryName(manifest);
+
+                    var dataFile = File.ReadAllText(manifest);
+                    var config = JsonSerializer.Deserialize<ExportTexturesConfig>(dataFile);
+
+                    // загружаю информацию манифеста
+                    foreach (var view in UTFEditorMain.LoadedFilesThreeViews)
+                    {
+                        var nameFileImport = Path.GetFileName(view.Key);
+
+                        // ищу имя файла в манифесте
+                        var existManifestName = config.ExportItems.FirstOrDefault(it => it.NameFile == nameFileImport);
+
+                        if (existManifestName != null)
+                        {
+                            // ищу относительно пути манифейста
+                            var dirs = Directory.GetDirectories(dirManifest);
+
+                            var existDirFile = dirs.FirstOrDefault(it => Path.GetFileName(it) == nameFileImport);
+                            // папка с текстурами найдена (теперь нужно внести все текстуры в ней в views
+                            if (!string.IsNullOrEmpty(existDirFile))
+                            {
+                                var texNorms = new List<string>();
+
+                                // перебираю данные манифеста и сохраняю в форму файлы
+                                view.Value.ImportTexturesDdsAndTga(existManifestName.ExportTextures, existDirFile);
+
+                                currenKey = view.Key;
+                                view.Value.SaveUTFFile(view.Key);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var log = ex.Message;
+
             }
         }
 
@@ -1456,6 +1595,191 @@ namespace UTFEditor
                 {
                     childForm.SurFile.Save();
                 }
+            }
+        }
+
+        private static string[] GetFiles(string sourceFolder, string filters, System.IO.SearchOption searchOption)
+        {
+            return filters.Split('|').SelectMany(filter => System.IO.Directory.GetFiles(sourceFolder, filter, searchOption)).ToArray();
+        }
+
+
+        /// <summary>
+        /// Opens Folder dialog and calls "CalcTangents" for each UTF file found.
+        /// 
+        /// Todo: Maybe make multithreaded. Also shares structure with VerifyModelsInFolder, so this could be generalized.
+        /// Author: Schmackbolzen
+        /// </summary>   
+        private void AddOrRecalculateTBNDataToAllModelsInFolder(object sender, EventArgs e)
+        {            
+            if (recalcForm.ShowDialog(this) == DialogResult.OK)
+            {  
+                if (folderBrowserDialogAddTBNDataToModels.ShowDialog() == DialogResult.OK)
+                {
+                    if (!string.IsNullOrEmpty(folderBrowserDialogAddTBNDataToModels.SelectedPath))
+                    {
+                        this.Enabled = false;
+                        ProgressWindow progressWindow = new ProgressWindow();
+                        progressWindow.SetWindowTitle("Adding TBN data to model files...");
+                        progressWindow.Show(this);
+
+                        LogWindow errorLogWindow = new LogWindow();
+                        errorLogWindow.SetWindowTitle("Occured errors");                       
+
+                        string[] files = GetFiles(folderBrowserDialogAddTBNDataToModels.SelectedPath, "*.cmp|*.3db", SearchOption.AllDirectories);
+
+                        string numFilesText = " of " + files.Length.ToString();
+                        progressWindow.SetMaxmimumProgressSteps(files.Length);
+
+                        int processedFilesCount = 0;
+                        bool errorsWhileProcessing = false;
+                        foreach (var file in files)
+                        {
+                            progressWindow.SetProgressText("File " + processedFilesCount.ToString() + numFilesText);
+
+                            //Create new class each time to make sure there is no remaining stuff from previous UTF file
+                            //Todo: Optimize
+                            UTFForm childForm = new UTFForm(this, file);
+                            try
+                            {                                
+                                childForm.LoadUTFFile(file);
+                                childForm.CalcTangents(recalcForm.RecalculateNormals, recalcForm.MaxAngle, true);
+                                childForm.SaveUTFFile(file);
+                            }
+                            catch (Exception ex)
+                            {
+                                errorLogWindow.AppendBoldLogText(file + ":");
+                                errorLogWindow.AppendNormalLogText(ex.Message);
+                                errorsWhileProcessing = true;
+                            }
+
+                            childForm.Delete();
+                            progressWindow.AdvanceProgressStep();
+                            Application.DoEvents();
+
+                            processedFilesCount++;
+
+                            if (progressWindow.ProcessWasAborted())
+                                break;
+
+                        }
+
+                        progressWindow.Close();
+                        this.Enabled = true;
+
+                        string processedFilesText = "Files processed: " + processedFilesCount.ToString() + numFilesText + ". ";
+
+                        if (!errorsWhileProcessing)
+                            System.Windows.Forms.MessageBox.Show(this, processedFilesText + "No errors occured.", "Success");
+                        else
+                        {
+                            errorLogWindow.SetLogDescrition(processedFilesText + "Errors which occured during processing model files:");
+                            errorLogWindow.Show(this);
+                        }
+
+                    }
+                }
+            }           
+        }
+        /// <summary>
+        /// Opens Folder dialog and calls "VerifyModelData" for each UTF file found.
+        /// 
+        /// Todo: Maybe make multithreaded. Also shares structure with AddOrRecalculateTBNDataToAllModelsInFolder, so this could be generalized.
+        /// Author: Schmackbolzen
+        /// </summary>       
+        private void VerifyModelsInFolder(object sender, EventArgs e)
+        { 
+            if (folderBrowserDialogVerifyModels.ShowDialog(this) == DialogResult.OK)
+            {              
+                if (!string.IsNullOrEmpty(folderBrowserDialogVerifyModels.SelectedPath))
+                {
+                    this.Enabled = false;
+                    ProgressWindow progressWindow = new ProgressWindow();                    
+                    progressWindow.SetWindowTitle("Verifying model files...");
+                    progressWindow.Show(this);
+
+                    string[] files = GetFiles(folderBrowserDialogVerifyModels.SelectedPath, "*.cmp|*.3db", SearchOption.AllDirectories);
+
+                    string numFilesText = " of " + files.Length.ToString();
+                    progressWindow.SetMaxmimumProgressSteps(files.Length);
+
+                    List<(string, string)> errorsList = new List<(string, string)>();
+                    int verifiedFilesCount = 0;
+                    foreach (var file in files)
+                    {
+                        progressWindow.SetProgressText("File " + verifiedFilesCount.ToString() + numFilesText);
+
+                        //Create new class each time to make sure there is no remaining stuff from previous UTF file
+                        //Todo: Optimize
+                        UTFForm childForm = new UTFForm(this, file);
+                        try
+                        {  
+                            childForm.LoadUTFFile(file);                           
+                            List<string> errors=childForm.VerifyModelData();
+                            if (errors.Count > 0)
+                            {
+                                string combinedString = string.Join("\n", errors.ToArray());
+                                errorsList.Add((file, combinedString));
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {                          
+                            errorsList.Add((file, ex.Message));
+                        }
+
+                        childForm.Close();
+                        progressWindow.AdvanceProgressStep();
+                        Application.DoEvents();
+                        
+                        verifiedFilesCount++;
+
+                        if (progressWindow.ProcessWasAborted())
+                            break;
+                    }
+
+                    progressWindow.Close();
+                    this.Enabled = true;
+
+                    string verifiedFilesText = "Files verified: " + verifiedFilesCount.ToString() + numFilesText + ". ";
+
+                    if (errorsList.Count == 0)
+                        System.Windows.Forms.MessageBox.Show(this, verifiedFilesText + "No errors occured.", "Success");
+                    else
+                    {
+                        LogWindow errorLogWindow = new LogWindow();
+                        errorLogWindow.SetWindowTitle("Found errors");
+                        errorLogWindow.SetLogDescrition(verifiedFilesText + "Errors found in model files:");
+                        foreach ((string filename, string errors) in errorsList)
+                        {
+                            errorLogWindow.AppendBoldLogText(filename+":");
+                            errorLogWindow.AppendNormalLogText(errors);
+                        }
+                        errorLogWindow.Show(this);
+                    }
+
+                }
+            }
+            
+        }
+
+        private void closeAllWithoutTextureLibsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var closesList = new List<string>();
+            foreach (var view in UTFEditorMain.LoadedFilesThreeViews)
+            {
+
+                TreeNode rootNode = view.Value.Tree.Nodes[0];
+                TreeNode[] tlibs = rootNode.Nodes.Find("Texture library", false);
+                TreeNode textureLibrary;
+
+                if (tlibs.Length == 0)
+                    closesList.Add(view.Key);
+            }
+            foreach (var key in closesList)
+            {
+                UTFEditorMain.LoadedFilesThreeViews[key].Close();
+                UTFEditorMain.LoadedFilesThreeViews.Remove(key);
             }
         }
     }

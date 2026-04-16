@@ -49,6 +49,7 @@ namespace UTFEditor
             public float TangentX;
             public float TangentY;
             public float TangentZ;
+            public float TangentW;
             public float BinormalX;
             public float BinormalY;
             public float BinormalZ;
@@ -134,8 +135,8 @@ namespace UTFEditor
                 case 0x152:
                 case 0x212:
                 case 0x252:
+                case 0x312:
                 case 0x412:
-                case 0x512:
                     break;
                 default:
                     throw new Exception(String.Format("FVF 0x{0:X} not supported.", FlexibleVertexFormat));
@@ -172,6 +173,10 @@ namespace UTFEditor
             // Read the vertex data.
             try
             {
+                bool hasNormals = (FlexibleVertexFormat & D3DFVF_NORMAL) == D3DFVF_NORMAL;
+                bool hasDiffuse = (FlexibleVertexFormat & D3DFVF_DIFFUSE) == D3DFVF_DIFFUSE;
+                uint fvfTexCount = FlexibleVertexFormat & D3DFVF_TEXCOUNT_MASK;
+                
                 for (int count = 0; count < NumVertices; count++)
                 {                 
                     TVertex item = new TVertex();
@@ -179,52 +184,48 @@ namespace UTFEditor
                     item.X = Utilities.GetFloat(data, ref pos);
                     item.Y = Utilities.GetFloat(data, ref pos);
                     item.Z = Utilities.GetFloat(data, ref pos);
-                    if ((FlexibleVertexFormat & D3DFVF_NORMAL) == D3DFVF_NORMAL)
+                    if (hasNormals)
                     {
                         item.NormalX = Utilities.GetFloat(data, ref pos);
                         item.NormalY = Utilities.GetFloat(data, ref pos);
                         item.NormalZ = Utilities.GetFloat(data, ref pos);
                     }
-                    if ((FlexibleVertexFormat & D3DFVF_DIFFUSE) == D3DFVF_DIFFUSE)
+                    if (hasDiffuse)
                     {
                         item.Diffuse = Utilities.GetDWord(data, ref pos);
-                    }
-                    if ((FlexibleVertexFormat & D3DFVF_TEX1) == D3DFVF_TEX1)
+                    }                   
+                    switch (fvfTexCount)
                     {
-                        item.S = Utilities.GetFloat(data, ref pos);
-                        item.T = Utilities.GetFloat(data, ref pos);
+                        case D3DFVF_TEX1:
+                            item.S = Utilities.GetFloat(data, ref pos);
+                            item.T = Utilities.GetFloat(data, ref pos);
+                            break;
+                        case D3DFVF_TEX2:
+                            item.S = Utilities.GetFloat(data, ref pos);
+                            item.T = Utilities.GetFloat(data, ref pos);
+                            item.U = Utilities.GetFloat(data, ref pos);
+                            item.V = Utilities.GetFloat(data, ref pos);
+                            break;
+                        case D3DFVF_TEX3:
+                            item.S = Utilities.GetFloat(data, ref pos);
+                            item.T = Utilities.GetFloat(data, ref pos);
+                            item.TangentX = Utilities.GetFloat(data, ref pos);
+                            item.TangentY = Utilities.GetFloat(data, ref pos);
+                            item.TangentZ = Utilities.GetFloat(data, ref pos);
+                            item.TangentW = Utilities.GetFloat(data, ref pos);
+                            break;
+                        case D3DFVF_TEX4:
+                            item.S = Utilities.GetFloat(data, ref pos);
+                            item.T = Utilities.GetFloat(data, ref pos);
+                            item.U = Utilities.GetFloat(data, ref pos);
+                            item.V = Utilities.GetFloat(data, ref pos);
+                            item.TangentX = Utilities.GetFloat(data, ref pos);
+                            item.TangentY = Utilities.GetFloat(data, ref pos);
+                            item.TangentZ = Utilities.GetFloat(data, ref pos);
+                            item.TangentW = Utilities.GetFloat(data, ref pos);
+                            break;
                     }
-                    if ((FlexibleVertexFormat & D3DFVF_TEX2) == D3DFVF_TEX2)
-                    {
-                        item.S = Utilities.GetFloat(data, ref pos);
-                        item.T = Utilities.GetFloat(data, ref pos);
-                        item.U = Utilities.GetFloat(data, ref pos);
-                        item.V = Utilities.GetFloat(data, ref pos);
-                    }
-                    if ((FlexibleVertexFormat & D3DFVF_TEX4) == D3DFVF_TEX4)
-                    {
-                        item.S = Utilities.GetFloat(data, ref pos);
-                        item.T = Utilities.GetFloat(data, ref pos);
-                        item.TangentX = Utilities.GetFloat(data, ref pos);
-                        item.TangentY = Utilities.GetFloat(data, ref pos);
-                        item.TangentZ = Utilities.GetFloat(data, ref pos);
-                        item.BinormalX = Utilities.GetFloat(data, ref pos);
-                        item.BinormalY = Utilities.GetFloat(data, ref pos);
-                        item.BinormalZ = Utilities.GetFloat(data, ref pos);
-                    }
-                    if ((FlexibleVertexFormat & D3DFVF_TEX5) == D3DFVF_TEX5)
-                    {
-                        item.S = Utilities.GetFloat(data, ref pos);
-                        item.T = Utilities.GetFloat(data, ref pos);
-                        item.U = Utilities.GetFloat(data, ref pos);
-                        item.V = Utilities.GetFloat(data, ref pos);
-                        item.TangentX = Utilities.GetFloat(data, ref pos);
-                        item.TangentY = Utilities.GetFloat(data, ref pos);
-                        item.TangentZ = Utilities.GetFloat(data, ref pos);
-                        item.BinormalX = Utilities.GetFloat(data, ref pos);
-                        item.BinormalY = Utilities.GetFloat(data, ref pos);
-                        item.BinormalZ = Utilities.GetFloat(data, ref pos);
-                    }
+               
                     Vertices.Add(item);
                 }
             }
@@ -247,33 +248,36 @@ namespace UTFEditor
 
             iByteSize += NumVertices * 16; // vertices position
 
-            if ((FlexibleVertexFormat & D3DFVF_NORMAL) == D3DFVF_NORMAL)
+            bool hasNormals = (FlexibleVertexFormat & D3DFVF_NORMAL) == D3DFVF_NORMAL;
+            bool hasDiffuse = (FlexibleVertexFormat & D3DFVF_DIFFUSE) == D3DFVF_DIFFUSE;
+
+            if (hasNormals)
             {
                 iByteSize += NumVertices * 16; // vertices normal
             }
-            if ((FlexibleVertexFormat & D3DFVF_DIFFUSE) == D3DFVF_DIFFUSE)
+            if (hasDiffuse)
             {
                 iByteSize += NumVertices * 4; // vertices diffuse
             }
-            if ((FlexibleVertexFormat & D3DFVF_TEX1) == D3DFVF_TEX1)
-            {
-                iByteSize += NumVertices * 8; // vertices texcoords
-            }
-            if ((FlexibleVertexFormat & D3DFVF_TEX2) == D3DFVF_TEX2)
-            {
-                iByteSize += NumVertices * 16; // vertices texcoords
-            }
-            if ((FlexibleVertexFormat & D3DFVF_TEX4) == D3DFVF_TEX4)
-            {
-                iByteSize += NumVertices * 8; // vertices texcoords
-                iByteSize += NumVertices * 24; // vertices tangents binormals
-            }
-            if ((FlexibleVertexFormat & D3DFVF_TEX5) == D3DFVF_TEX5)
-            {
-                iByteSize += NumVertices * 16; // vertices texcoords
-                iByteSize += NumVertices * 24; // vertices tangents binormals
-            }
 
+            uint fvfTexCount = FlexibleVertexFormat & D3DFVF_TEXCOUNT_MASK;
+            switch(fvfTexCount)
+            {
+                case D3DFVF_TEX1:
+                    iByteSize += NumVertices * 8; // vertices texcoords
+                    break;
+                case D3DFVF_TEX2:
+                    iByteSize += NumVertices * 16; // vertices texcoords
+                    break;
+                case D3DFVF_TEX3:
+                    iByteSize += NumVertices * 8; // vertices texcoords
+                    iByteSize += NumVertices * 16; // vertices tangents + w
+                    break;
+                case D3DFVF_TEX4:
+                    iByteSize += NumVertices * 16; // vertices texcoords
+                    iByteSize += NumVertices * 16; // vertices tangents + w
+                    break;
+            }
 
             byte[] data = new byte[iByteSize];
             int pos = 0;
@@ -310,52 +314,48 @@ namespace UTFEditor
                 Utilities.WriteFloat(data, vertice.X, ref pos);
                 Utilities.WriteFloat(data, vertice.Y, ref pos);
                 Utilities.WriteFloat(data, vertice.Z, ref pos);
-                if ((FlexibleVertexFormat & D3DFVF_NORMAL) == D3DFVF_NORMAL)
+                if (hasNormals)
                 {
                     Utilities.WriteFloat(data, vertice.NormalX, ref pos);
                     Utilities.WriteFloat(data, vertice.NormalY, ref pos);
                     Utilities.WriteFloat(data, vertice.NormalZ, ref pos);
                 }
-                if ((FlexibleVertexFormat & D3DFVF_DIFFUSE) == D3DFVF_DIFFUSE)
+                if (hasDiffuse)
                 {
                     Utilities.WriteDWord(data, vertice.Diffuse, ref pos);
                 }
-                if ((FlexibleVertexFormat & D3DFVF_TEX1) == D3DFVF_TEX1)
+                
+                switch (fvfTexCount)
                 {
-                    Utilities.WriteFloat(data, vertice.S, ref pos);
-                    Utilities.WriteFloat(data, vertice.T, ref pos);
-                }
-                if ((FlexibleVertexFormat & D3DFVF_TEX2) == D3DFVF_TEX2)
-                {
-                    Utilities.WriteFloat(data, vertice.S, ref pos);
-                    Utilities.WriteFloat(data, vertice.T, ref pos);
-                    Utilities.WriteFloat(data, vertice.U, ref pos);
-                    Utilities.WriteFloat(data, vertice.V, ref pos);
-                }
-                if ((FlexibleVertexFormat & D3DFVF_TEX4) == D3DFVF_TEX4)
-                {
-                    Utilities.WriteFloat(data, vertice.S, ref pos);
-                    Utilities.WriteFloat(data, vertice.T, ref pos);
-                    Utilities.WriteFloat(data, vertice.TangentX, ref pos);
-                    Utilities.WriteFloat(data, vertice.TangentY, ref pos);
-                    Utilities.WriteFloat(data, vertice.TangentZ, ref pos);
-                    Utilities.WriteFloat(data, vertice.BinormalX, ref pos);
-                    Utilities.WriteFloat(data, vertice.BinormalY, ref pos);
-                    Utilities.WriteFloat(data, vertice.BinormalZ, ref pos);
-                }
-                if ((FlexibleVertexFormat & D3DFVF_TEX5) == D3DFVF_TEX5)
-                {
-                    Utilities.WriteFloat(data, vertice.S, ref pos);
-                    Utilities.WriteFloat(data, vertice.T, ref pos);
-                    Utilities.WriteFloat(data, vertice.U, ref pos);
-                    Utilities.WriteFloat(data, vertice.V, ref pos);
-                    Utilities.WriteFloat(data, vertice.TangentX, ref pos);
-                    Utilities.WriteFloat(data, vertice.TangentY, ref pos);
-                    Utilities.WriteFloat(data, vertice.TangentZ, ref pos);
-                    Utilities.WriteFloat(data, vertice.BinormalX, ref pos);
-                    Utilities.WriteFloat(data, vertice.BinormalY, ref pos);
-                    Utilities.WriteFloat(data, vertice.BinormalZ, ref pos);
-                }
+                    case D3DFVF_TEX1:
+                        Utilities.WriteFloat(data, vertice.S, ref pos);
+                        Utilities.WriteFloat(data, vertice.T, ref pos);
+                        break;
+                    case D3DFVF_TEX2:
+                        Utilities.WriteFloat(data, vertice.S, ref pos);
+                        Utilities.WriteFloat(data, vertice.T, ref pos);
+                        Utilities.WriteFloat(data, vertice.U, ref pos);
+                        Utilities.WriteFloat(data, vertice.V, ref pos);
+                        break;
+                    case D3DFVF_TEX3:
+                        Utilities.WriteFloat(data, vertice.S, ref pos);
+                        Utilities.WriteFloat(data, vertice.T, ref pos);
+                        Utilities.WriteFloat(data, vertice.TangentX, ref pos);
+                        Utilities.WriteFloat(data, vertice.TangentY, ref pos);
+                        Utilities.WriteFloat(data, vertice.TangentZ, ref pos);
+                        Utilities.WriteFloat(data, vertice.TangentW, ref pos);
+                        break;
+                    case D3DFVF_TEX4:
+                        Utilities.WriteFloat(data, vertice.S, ref pos);
+                        Utilities.WriteFloat(data, vertice.T, ref pos);
+                        Utilities.WriteFloat(data, vertice.U, ref pos);
+                        Utilities.WriteFloat(data, vertice.V, ref pos);
+                        Utilities.WriteFloat(data, vertice.TangentX, ref pos);
+                        Utilities.WriteFloat(data, vertice.TangentY, ref pos);
+                        Utilities.WriteFloat(data, vertice.TangentZ, ref pos);
+                        Utilities.WriteFloat(data, vertice.TangentW, ref pos);
+                        break;
+                }               
             }
 
             return data;

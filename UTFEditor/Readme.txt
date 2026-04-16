@@ -7,6 +7,18 @@ This program is free software. You may do what you like with it but don't forget
 You may need to install "DirectX End-User Runtime Web Installer" (dxwebsetup.exe) for .NET assemblies to make the model viewer work.
 link: http://www.microsoft.com/downloads/details.aspx?familyid=2DA43D38-DB71-4C1B-BC6A-9B6652CD92A3&displaylang=en
 
+==== Changes in 3.1 ====
+Note: This version is not compatible with models from Freeworlds mod, because the format has been changed for the Advanced Renderer.
+
+* Added optional recalculation of normal vectors when calculation tangent and binormal vectors
+* Added model data verification for finding models which crash Freelancer
+* Added display of normal vectors in 3d model viewer
+* Improved tangent and binormal vector calculation
+* Changed format for tangent and binormal data in meshes to be more compact (needed for the Advanced Renderer)
+* Fixed error when loading models with certain cons data resulting in the UTF file not being loaded
+* Fixed vector operators changing first input vector
+* Minor Fixes
+
 ==== Changes in 3.0 ====
 
 * Improved hardpoint editing and lots of stuff
@@ -38,6 +50,7 @@ link: http://www.microsoft.com/downloads/details.aspx?familyid=2DA43D38-DB71-4C1
 * Adoxa - Fixes and improvements for 2.1 & 3.0
 * Cannon - Wrote version 2.0, added the model viewer and other random features.
 * FriendlyFire - Added hardpoint support to model viewer and miscellaneous features and bug fixes.
+* Schmackbolzen - Version 3.1
 * w0dk4 - Bugfixes and support for normal mapping-enabled models.
 
 Additional thanks to the following people:
@@ -50,7 +63,7 @@ Additional thanks to the following people:
 
 ==== Installation ====
 
-This program needs Directx 9 and .NET 3.5 client libraries installed.
+This program needs Directx 9 and .NET 4.8 client libraries installed.
 
 ==== Build ====
 

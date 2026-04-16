@@ -62,6 +62,28 @@ namespace UTFEditor
                 dev.DrawIndexedPrimitive(PrimitiveType.TriangleList, 0, 0, Vertices.Length, 0, Indices.Length / 3);
         }
 
+        public void DrawNormals()
+        {
+            int numVertices = Vertices.Length;
+            Vector3[] normalCoords = new Vector3[numVertices * 2];
+
+            int index = 0;
+
+            for (int i = 0; i < numVertices; i++)
+            {
+                normalCoords[index] = Vertices[i].Position;
+
+                Vector3 projected = Vertices[i].Position + Vertices[i].Normal * 5;
+
+                normalCoords[index + 1] = projected;
+
+                index += 2;
+            }
+            dev.VertexFormat = VertexFormat.Position;
+
+            dev.DrawUserPrimitives<Vector3>(PrimitiveType.LineList, numVertices, normalCoords);
+        }
+
         public void Dispose()
         {
             vb.Dispose();

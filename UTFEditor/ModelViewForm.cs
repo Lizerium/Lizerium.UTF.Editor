@@ -56,6 +56,8 @@ namespace UTFEditor
         
         DateTime lastClickTime;
 
+        bool showVerticesNormals => displayVerticeNormalsToolStripMenuItem.Checked;
+
         public struct BoundingBox
         {
             Vector3 min, max;
@@ -790,8 +792,9 @@ namespace UTFEditor
                 try
                 {
                     string dir = directoryPath;
-                    for (int i = 0; TexRemaining.Count != 0 && i < 3; ++i)
-                    {
+                    //Look in all directories up to the drive base directory for textures
+                    while (TexRemaining.Count != 0)
+                    {                      
                         foreach (string matFile in Directory.GetFiles(dir, "*.mat"))
                         {
                             UTFFile matUtfFile = new UTFFile();
@@ -803,8 +806,13 @@ namespace UTFEditor
                                     break;
                             }
                             catch { }
-                        }
-                        dir = Directory.GetParent(dir).ToString();
+                        }       
+                       
+                        DirectoryInfo parentDir = Directory.GetParent(dir);
+                        //Reached drive base directory. Abort.
+                        if (parentDir == null)
+                            break;
+                        dir = parentDir.ToString();
                     }
                 }
                 catch { }
@@ -1377,10 +1385,30 @@ namespace UTFEditor
                     {
                         device.SetTextureStageState(1, TextureStage.ColorOperation, TextureOperation.Disable);
                         device.SetTextureStageState(1, TextureStage.AlphaOperation, TextureOperation.Disable);
-                    }
+                    }                   
 
                     mg.M[mn - mg.RefData.StartMesh].Draw();
-				}
+
+                    if (showVerticesNormals)
+                    {
+
+                        FinalColor = new Color(0xFF, 0, 0, 0xFF);
+
+                        device.SetRenderState(RenderState.TextureFactor, FinalColor.ToBgra());
+
+                        device.SetTexture(0, null);
+
+                        device.SetTextureStageState(0, TextureStage.ColorOperation, TextureOperation.SelectArg2);
+                        device.SetTextureStageState(0, TextureStage.ColorArg2, TextureArgument.TFactor);
+                        device.SetTextureStageState(0, TextureStage.AlphaOperation, TextureOperation.SelectArg2);
+                        device.SetTextureStageState(0, TextureStage.AlphaArg2, TextureArgument.TFactor);
+
+                        device.SetTextureStageState(1, TextureStage.ColorOperation, TextureOperation.Disable);
+                        device.SetTextureStageState(1, TextureStage.AlphaOperation, TextureOperation.Disable);
+
+                        mg.M[mn - mg.RefData.StartMesh].DrawNormals();
+                    }
+                }
 			}
 
             if (sur != null && surDisplay != SurDisplay.Hidden)
@@ -3146,6 +3174,11 @@ namespace UTFEditor
         private void centersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             centersToolStripMenuItem.Checked = !centersToolStripMenuItem.Checked;
+        }
+
+        private void displayVerticeNormalsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            Render();
         }
 
         private void CloseFuseEditor(bool close)

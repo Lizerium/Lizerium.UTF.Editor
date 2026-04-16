@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -126,6 +127,11 @@ namespace UTFEditor
 
         public static string GetString(byte[] data, ref int startIndex, int maxLength)
         {
+            maxLength = Math.Max(0,Math.Min(maxLength, data.Length - startIndex));
+
+            if (maxLength <= 0)
+                return "";
+
             int len = Array.IndexOf(data, (byte)0, startIndex, maxLength) - startIndex;
             if (len < 0)
                 len = maxLength;

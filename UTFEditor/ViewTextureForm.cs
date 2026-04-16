@@ -15,7 +15,7 @@ namespace UTFEditor
         byte[][,] alphamap;
         int level;
         Device device = null;
-
+        private const int DDS_SIZE_LIMIT = 1_125_128;
         public ViewTextureForm(TreeNode node, string title)
         {
             this.node = node;
@@ -59,6 +59,8 @@ namespace UTFEditor
                 {
                     if (int.TryParse(n.Name.Substring(3), out level))
                     {
+                        if (tex.Length < level)
+                            level = tex.Length;
                         tex[level] = ReadTGA(n.Tag as byte[]);
                         if (tex[level] == null)
                             tex[level] = LoadTexture(n.Tag as byte[]);
@@ -142,6 +144,17 @@ namespace UTFEditor
         // and Volker Gärtner and Sherman Wilcox (FreeImage 3).
         private Bitmap[] ReadDDS(byte[] data)
         {
+            if (data.Length > DDS_SIZE_LIMIT)
+            {
+                MessageBox.Show(
+                    $"Файл DDS превышает допустимый размер {DDS_SIZE_LIMIT} байт.\nТекущий размер: {data.Length:N0} байт.",
+                    "DDS слишком большой",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return null;
+            }
+
             int pos;
             DDSHeader dds = new DDSHeader();
             if (!dds.Read(data, out pos))
@@ -211,6 +224,57 @@ namespace UTFEditor
                     {
                         for (int x = 0; x < dds.width; x += 4)
                         {
+                            //if (DXT3)
+                            //{
+                            //    alpha = GetDXT3Alpha(data, ref pos);
+                            //}
+                            //else if (DXT5)
+                            //{
+                            //    alpha = GetDXT5Alpha(data, ref pos, out index);
+                            //}
+                            //Color[] col = GetBlockColors(data, ref pos);
+                            //for (int y1 = 0; y1 < 4; ++y1)
+                            //{
+                            //    int py = y + y1;
+                            //    if (py >= dds.height) continue;
+
+                            //    byte val = data[pos++];
+                            //    for (int x1 = 0; x1 < 4; ++x1)
+                            //    {
+                            //        int px = x + x1;
+                            //        if (px >= dds.width) continue;
+
+                            //        int p = py * bmdata.Stride + px * 4;
+
+                            //        Color c = col[val & 3];
+                            //        byte a;
+
+                            //        if (DXT3)
+                            //        {
+                            //            a = alpha[y1 * 4 + x1];
+                            //            alphamap[level][py, px] = a;
+                            //        }
+                            //        else if (DXT5)
+                            //        {
+                            //            alphamap[level][py, px] = alpha[index[y1 * 4 + x1]];
+                            //            a = 0xFF;
+                            //        }
+                            //        else // DXT1
+                            //        {
+                            //            a = c.A;
+                            //            alphamap[level][py, px] = a;
+                            //            if (a != 0xFF)
+                            //                checkBoxTransparent.Visible = true;
+                            //        }
+
+                            //        pdata[p++] = c.B;
+                            //        pdata[p++] = c.G;
+                            //        pdata[p++] = c.R;
+                            //        pdata[p++] = a;
+
+                            //        val >>= 2;
+                            //    }
+                            //}
                             if (DXT3)
                             {
                                 alpha = GetDXT3Alpha(data, ref pos);
@@ -222,12 +286,12 @@ namespace UTFEditor
                             Color[] col = GetBlockColors(data, ref pos);
                             for (int y1 = 0; y1 < 4; ++y1)
                             {
-                                int  p = (y + y1) * bmdata.Stride + x * 4;
+                                int p = (y + y1) * bmdata.Stride + x * 4;
                                 byte val = data[pos++];
                                 for (int x1 = 0; x1 < 4; ++x1)
                                 {
                                     Color c = col[val & 3];
-                                    byte  a;
+                                    byte a;
                                     if (DXT3)
                                     {
                                         a = alphamap[level][y + y1, x + x1] = alpha[y1 * 4 + x1];

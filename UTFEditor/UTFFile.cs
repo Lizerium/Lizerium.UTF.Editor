@@ -156,13 +156,20 @@ namespace UTFEditor
             for (int i = 0; i < data.Length; i += size - 128)
             {
                 string parent = Utilities.GetString(data, ref i, 64);
-                string child  = Utilities.GetString(data, ref i, 64);
+                if (parent == "")
+                    break;
+                string child;
+                if (i < data.Length)
+                    child = Utilities.GetString(data, ref i, 64);
+                else
+                    child = "";
                 TreeNode[] nodes = Parts.Nodes.Find(parent, true);
                 TreeNode node;
                 if (nodes.Length == 0)
                 {
-                    nodes = Parts.Nodes.Find(child, true);
-                    if (nodes.Length == 0)
+                    if(child != "")
+                        nodes = Parts.Nodes.Find(child, true);
+                    if (child=="" || nodes.Length == 0)
                     {
                         node = Parts.Nodes.Add(parent, parent);
                     }
@@ -204,6 +211,7 @@ namespace UTFEditor
             TreeNode dummyRoot = new TreeNode();
             dummyRoot.Text = "DUMMYROOT";
             dummyRoot.Nodes.Add((TreeNode)(root.Clone()));
+
 
             // Built the nodes and data blocks
             BuildNode(nodeBlock, dataBlock, nameOffsets, dummyRoot);
@@ -270,6 +278,13 @@ namespace UTFEditor
             {
                 string name = childNode.Text;
                 byte[] data = childNode.Tag as byte[];
+
+
+                if (data == null)
+                {
+                    throw new Exception($"Node `{childNode.Text}` has null Tag at path: {childNode.FullPath}");
+                }
+
                 int allocLength = (data.Length + 3) & ~3;
 
                 if (childNode.Nodes.Count == 0)

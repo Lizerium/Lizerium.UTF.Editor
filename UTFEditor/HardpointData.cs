@@ -160,10 +160,13 @@ namespace UTFEditor
             try
             {
                 TreeNode node = hardpoint.Nodes[name];
-                byte[] data = node.Tag as byte[];
-                int pos = 0;
-                for (int i = 0; i < count; ++i)
-                    val[i] = Utilities.GetFloat(data, ref pos);
+                if(node != null)
+                {
+                    byte[] data = node.Tag as byte[];
+                    int pos = 0;
+                    for (int i = 0; i < count; ++i)
+                        val[i] = Utilities.GetFloat(data, ref pos);
+                }
             }
             catch { }
             return val;
