@@ -1,35 +1,47 @@
-### Версия 4.0
+<div align="center" style="margin: 20px 0; padding: 10px; background: #1c1917; border-radius: 10px;">
+  <strong>🌐 Language: </strong>
+  
+  <a href="CHANGELOG.ru.md" style="color: #F5F752; margin: 0 10px;">
+    🇷🇺 Russian
+  </a>
+  | 
+  <span style="color: #0891b2; margin: 0 10px;">
+    ✅ 🇺🇸 English (current)
+  </span>
+</div>
+
+### Version 4.0
 
 # Changes / Changelog
 
 ## UI / Form
 
-- Увеличен `ClientSize` формы
-- Расширен `TableLayoutPanel`
-- Перемещена кнопка `OK`
+- Increased form `ClientSize`
+- Expanded `TableLayoutPanel`
+- Repositioned `OK` button
 - `RichTextBox`:
-  - `ReadOnly = true`
-  - заменён `Dock = Fill` → `Anchor` (адаптивный resize)
-  - увеличен размер
+  - set to `ReadOnly = true`
+  - replaced `Dock = Fill` → `Anchor` (responsive resizing)
+  - increased size
 
-- Увеличена ширина `Label`
-- Удалён `FormBorderStyle = FixedDialog`
+- Increased `Label` width
+- Removed `FormBorderStyle = FixedDialog`
 
 ---
 
 ## Stability / Safety
 
-- Добавлена проверка `null` перед чтением:
+- Added `null` check before reading:
 
   ```csharp
   if (node != null)
   ```
 
-- Чтение `Tag` выполняется только при существующем узле
-- Исправлен потенциальный `NullReferenceException`
+* `Tag` is now read only if the node exists
+* Fixed potential `NullReferenceException`
 
 > [!IMPORTANT]
-> Устранены краши при работе с отсутствующими узлами и некорректными данными.
+> Crashes caused by missing nodes and invalid data have been eliminated.
 
 ---
 
@@ -37,17 +49,18 @@
 
 ### GetString
 
-- Добавлена защита от выхода за границы массива:
+- Added bounds protection:
 
   ```csharp
   maxLength = Math.Max(0, Math.Min(maxLength, data.Length - startIndex));
   ```
 
-- Устранён `ArgumentOutOfRangeException`
-- Стабилизировано поведение при повреждённых данных
+- Fixed possible `ArgumentOutOfRangeException`
+
+- Stabilized behavior for corrupted data
 
 > [!CAUTION]
-> Ранее возможен краш при чтении битых бинарных блоков.
+> Previously, invalid binary data could cause application crashes.
 
 ---
 
@@ -55,44 +68,46 @@
 
 ### Import
 
-- Добавлены:
+- Added:
   - `ImportTexturesAllDds`
   - `ImportTexturesDdsAndTga`
 
-- Поддержка `.dds` и `.tga`
-- Обновление существующих текстур без дублирования
+- Support for `.dds` and `.tga`
+
+- Updating existing textures without duplication
 
 ### Processing
 
-- Нормализация имён (`NormalizeNodeName`)
-- Работа с MIP-уровнями:
+- Name normalization (`NormalizeNodeName`)
+
+- MIP-level handling:
   - `ExtractMipLevelName`
   - `GetMipLevel`
 
-- Группировка текстур
+- Texture grouping
 
 ### Export
 
 - `ExportAllTextures`
-- Генерация `manifest.json`
-- Поддержка merge конфигурации
+- `manifest.json` generation
+- Config merge support
 
 > [!TIP]
-> Система теперь позволяет централизованно управлять текстурами и их версиями.
+> Enables centralized texture resource management.
 
 ---
 
 ## DDS Handling
 
-- Добавлен `DDS_SIZE_LIMIT`
-- Полностью переписан:
+- Added `DDS_SIZE_LIMIT`
+- Fully rewritten:
 
   ```csharp
   private Bitmap[] ReadDDS(byte[] data)
   ```
 
 > [!IMPORTANT]
-> Устранены проблемы с загрузкой повреждённых DDS.
+> Fixed issues with loading corrupted DDS files.
 
 ---
 
@@ -100,12 +115,12 @@
 
 ### Normals / Tangents
 
-- Добавлены:
+- Added:
   - `DuplicateVerticesAndCalcNormalsAndTangents`
   - `ComputeTangentBasis`
   - `DuplicateVerticesAndCalculateTangentsAndUpdateMeshEntries`
 
-### Вспомогательные структуры
+### Helper Structures
 
 - `Vec2`, `Vec3`
 - `VertexNeighbours`
@@ -113,7 +128,7 @@
 - `VerticeEdges`
 
 > [!TIP]
-> Добавлена поддержка корректных tangents для normal mapping.
+> Provides proper tangent generation for normal mapping.
 
 ---
 
@@ -121,48 +136,48 @@
 
 - `MakeSureMeshesAreSequential`
 
-Обеспечивает:
+Ensures:
 
-- последовательность вершин
-- отсутствие overlap
-- корректные offsets
+- sequential vertex layout
+- no overlaps
+- correct offsets
 
 ---
 
 ## WireData Rebuild
 
-- Пересчёт:
+- Recalculated:
   - `VertexOffset`
   - `MaxVertNoPlusOne`
   - `NoVertices`
 
-- Повторная привязка индексов
+- Rebinding of indices
 
 ---
 
 ## Model Validation
 
-- Добавлен:
+- Added:
 
   ```csharp
   VerifyModelData()
   ```
 
-Проверяет:
+Validates:
 
-- диапазоны вершин
-- индексы треугольников
+- vertex ranges
+- triangle indices
 - `VMeshRef`
 - `VWireData`
 
 > [!WARNING]
-> Некорректные модели теперь выявляются до использования.
+> Invalid models are now detected before use.
 
 ---
 
 ## Hardpoints / THN
 
-- Добавлены:
+- Added:
   - `ImportHardpointsFromTHN`
   - `ExportHardpointsToTHN`
   - `BuildImportedHardpoints`
@@ -173,7 +188,7 @@
 
 - `RescaleModel`
 
-Поддерживает:
+Supports:
 
 - `VMeshData`
 - `VMeshRef`
@@ -183,10 +198,10 @@
 
 ## Node System
 
-- Улучшен `NodeChanged`:
-  - авто-обновление CRC
-  - синхронизация hardpoints
-  - уведомление observers
+- Improved `NodeChanged`:
+  - automatic CRC update
+  - hardpoint synchronization
+  - observer notification
 
 ---
 
@@ -194,10 +209,10 @@
 
 - `ReplaceAll`
 
-Поддержка:
+Supports:
 
-- имени нод
-- содержимого
+- node names
+- content
 - partial / exact match
 
 ---
@@ -206,35 +221,35 @@
 
 ### Normals Visualization
 
-- Добавлен:
+- Added:
   - `DrawNormals()`
 
-- Используется:
+- Uses:
   - `DrawUserPrimitives(LineList)`
 
 ### UI Toggle
 
 - `displayVerticeNormalsToolStripMenuItem`
-- Реакция:
+- Trigger:
 
   ```csharp
   CheckedChanged → Render()
   ```
 
 > [!TIP]
-> Позволяет визуально анализировать геометрию и освещение моделей.
+> Enables visual analysis of geometry and lighting.
 
 ---
 
 ## Render Pipeline
 
-- Добавлен override:
+- Added override:
 
   ```csharp
   device.SetTextureStageState(0, TextureStage.ColorOperation, SelectArg2);
   ```
 
-- Отключение текстур в debug-режиме
+- Texture disabling in debug mode
 
 ---
 
@@ -242,11 +257,11 @@
 
 ### BEFORE
 
-- Ограничение: максимум 3 уровня вверх
+- Limited to 3 parent levels
 
 ### AFTER
 
-- Поиск до корня:
+- Traverses up to root:
 
   ```csharp
   while (...)
@@ -254,7 +269,7 @@
   ```
 
 > [!IMPORTANT]
-> Теперь текстуры находятся независимо от глубины вложенности.
+> Textures are now reliably found regardless of directory depth.
 
 ---
 
@@ -262,15 +277,15 @@
 
 ### TVertex
 
-- Удалено:
+- Removed:
   - `TangentW`
 
 ---
 
 ### FVF Processing
 
-- `switch` → bitmask (`if`)
-- Использование:
+- Replaced `switch` with bitmask logic (`if`)
+- Usage:
 
   ```csharp
   FlexibleVertexFormat & D3DFVF_*
@@ -280,18 +295,18 @@
 
 ### Supported FVF
 
-- Обновлён список форматов
-- Удалены лишние
-- Добавлены недостающие
+- Updated supported formats
+- Removed unused ones
+- Added missing ones
 
 > [!WARNING]
-> Возможна несовместимость со старыми бинарными данными.
+> May introduce incompatibility with older binary data.
 
 ---
 
 ### Vertex Parsing
 
-- Добавлены флаги:
+- Added flags:
 
   ```csharp
   hasNormals
@@ -299,7 +314,7 @@
   fvfTexCount
   ```
 
-- Разбор через:
+- Parsing via:
 
   ```csharp
   switch(fvfTexCount)
@@ -309,8 +324,8 @@
 
 ### Buffer Size Calculation
 
-- Переписан `GetRawData()`
-- Зависит от:
+- Rewritten `GetRawData()`
+- Now depends on:
   - `hasNormals`
   - `hasDiffuse`
   - `fvfTexCount`
@@ -319,52 +334,53 @@
 
 ## Data Validation
 
-- Добавлены проверки:
-  - пустого `parent`
-  - выхода за границы
+- Added checks for:
+  - empty `parent`
+  - out-of-bounds access
   - `child == ""`
   - `data == null`
 
 > [!CAUTION]
-> Поведение при некорректных данных теперь контролируется, а не приводит к падению.
+> Invalid data is now handled safely instead of causing crashes.
 
 ---
 
-### Версия 3.0
+### Version 3.0
 
-- Улучшено редактирование hardpoint
-- Различные исправления и улучшения
-
----
-
-### Версия 2.1
-
-- Чтение материалов модели из родительских директорий
-- Автоматическое раскрытие корневого узла
-- Отображение моделей `.3db` и `.sph`
-- Отображение масштаба модели числом
-- Переработка UI:
-  - удалены shortcut-клавиши из контекстного меню
-  - добавлены accelerator-клавиши
-  - добавлена кнопка переименования
-- Возможность задания центра модели
+- Improved hardpoint editing
+- Various fixes and improvements
 
 ---
 
-### Версия 2.0
+### Version 2.1
 
-- Добавлен редактор анимационных каналов
-- Автоматическое обновление CRC для `VMeshRef` при изменении имени `VMeshData`
-- Добавлен просмотр модели с автообновлением при изменении `Pris / Rev / Fix`
-- Добавлен редактор `VMeshRef`
-- Добавлен интерпретатор yaw/pitch/roll для Fix (с ограничениями)
+- Reads model materials from parent directories
+- Automatically expands root node
+- Displays `.3db` and `.sph` models
+- Shows model scale as a numeric value
+- UI improvements:
+  - removed shortcut keys from context menu
+  - added accelerator keys
+  - added rename button
+
+- Ability to define model center point
 
 ---
 
-## Планируемые улучшения
+### Version 2.0
 
-- Полная поддержка всех FVF форматов
-- Улучшение преобразований углов Эйлера
-- Добавление просмотра `.tga` и `.dds`
-- Добавление редактора hardpoint
-- Улучшение управления центром модели (мышью)
+- Added animation channel editor
+- Automatic CRC update for `VMeshRef` when renaming `VMeshData`
+- Added live-updating model viewer for `Pris / Rev / Fix`
+- Added `VMeshRef` editor
+- Added yaw/pitch/roll interpreter for Fix (limited accuracy)
+
+---
+
+## Planned Improvements
+
+- Full support for all FVF formats
+- Improved Euler angle conversions
+- Add `.tga` / `.dds` viewer
+- Add hardpoint viewer/editor
+- Improve mouse-based center movement
